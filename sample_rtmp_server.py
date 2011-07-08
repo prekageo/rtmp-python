@@ -39,8 +39,8 @@ class RTMPHandler(SocketServer.BaseRequestHandler):
             elif state == self.WAITING_DATA:
                 self.handle_data()
             else:
-                assert(False)
-    
+                assert False, state
+
     def handle_C1(self):
         """
         Handle version byte and first handshake packet sent by client. Send
@@ -49,14 +49,14 @@ class RTMPHandler(SocketServer.BaseRequestHandler):
         self.sock_stream.read_uchar()
         c1 = rtmp_protocol_base.Packet()
         c1.decode(self.sock_stream)
-        
+
         self.sock_stream.write_uchar(3)
         s1 = rtmp_protocol_base.Packet(first=0,second=0,payload='x'*1528)
         s1.encode(self.sock_stream)
         s2 = rtmp_protocol_base.Packet(first=0,second=0,payload='x'*1528)
         s2.encode(self.sock_stream)
         self.sock_stream.flush()
-    
+
     def handle_C2(self):
         """ Handle second handshake packet from client. """
         c2 = rtmp_protocol_base.Packet()
@@ -66,7 +66,7 @@ class RTMPHandler(SocketServer.BaseRequestHandler):
         """ Handle the first RTMP message that initiates the connection. """
         self.reader.next()
         msg = {
-            'msg': rtmp_protocol.DataTypes.COMMAND, 
+            'msg': rtmp_protocol.DataTypes.COMMAND,
             'command':
             [
                 u'_result',
@@ -90,7 +90,7 @@ class RTMPHandler(SocketServer.BaseRequestHandler):
         responds with the use_success, clear and change events for each one of
         them.
         """
-        
+
         msg = {
             'msg': rtmp_protocol.DataTypes.SHARED_OBJECT,
             'curr_version': 0,
@@ -110,7 +110,7 @@ class RTMPHandler(SocketServer.BaseRequestHandler):
                 }
             ]
         }
-        
+
         if self.state2 == 0:
             self.state2 += 1
             print self.reader.next()
