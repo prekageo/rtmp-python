@@ -33,6 +33,7 @@ class FileDataTypeMixIn(pyamf.util.pure.DataTypeMixIn):
 class DataTypes:
     """ Represents an enumeration of the RTMP message datatypes. """
     NONE = -1
+    SET_CHUNK_SIZE = 1
     USER_CONTROL = 4
     WINDOW_ACK_SIZE = 5
     SET_PEER_BANDWIDTH = 6
@@ -142,6 +143,8 @@ class RtmpReader:
         #elif ret['msg'] == DataTypes.NONE:
         #    print 'WARNING: message with no datatype received.', header
         #    return self.next()
+        elif ret['msg'] == DataTypes.SET_CHUNK_SIZE:
+            ret['chunk_size'] = body_stream.read_ulong()
         else:
             assert False, header
 
@@ -383,13 +386,14 @@ class FlashSharedObject:
 class RtmpClient:
     """ Represents an RTMP client. """
 
-    def __init__(self, ip, port, tc_url, page_url, swf_url):
+    def __init__(self, ip, port, tc_url, page_url, swf_url, app):
         """ Initialize a new RTMP client. """
         self.ip = ip
         self.port = port
         self.tc_url = tc_url
         self.page_url = page_url
         self.swf_url = swf_url
+        self.app = app
         self.shared_objects = []
 
     def handshake(self):
@@ -428,7 +432,7 @@ class RtmpClient:
                     'videoCodecs': 252,
                     'audioCodecs': 3191,
                     'flashVer': u'WIN 10,1,85,3',
-                    'app': u'zoo_chat',
+                    'app': self.app,
                     'tcUrl': self.tc_url,
                     'videoFunction': 1,
                     'capabilities': 239,
@@ -464,6 +468,9 @@ class RtmpClient:
         elif msg['msg'] == DataTypes.USER_CONTROL:
             assert msg['event_type'] == UserControlTypes.STREAM_BEGIN, msg
             assert msg['event_data'] == '\x00\x00\x00\x00', msg
+        elif msg['msg'] == DataTypes.SET_CHUNK_SIZE:
+            assert msg['chunk_size'] > 0 and msg['chunk_size'] <= 65536, msg
+            self.reader.chunk_size = msg['chunk_size']
         else:
             assert False, msg
 

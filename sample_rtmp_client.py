@@ -14,7 +14,7 @@ def main():
     Start the client, connect to 127.0.0.1:80 and use 2 remote flash shared
     objects.
     """
-    client = rtmp_protocol.RtmpClient('127.0.0.1', 80, '', '', '')
+    client = rtmp_protocol.RtmpClient('127.0.0.1', 80, '', '', '', '')
     client.connect([])
 
     so_name = SO('so_name')
