@@ -452,6 +452,20 @@ class RtmpClient:
             if self.handle_message_pre_connect(msg):
                 break
 
+    def call(self, proc_name, parameters = {}, trans_id = 0):
+        """ Runs remote procedure calls (RPC) at the receiving end. """
+        msg = {
+            'msg': DataTypes.COMMAND,
+            'command':
+            [
+                u'call',
+                trans_id,
+                parameters
+            ]
+        }
+        self.writer.write(msg)
+        self.writer.flush()
+
     def handle_message_pre_connect(self, msg):
         """ Handle messages arriving before the connection is established. """
         if msg['msg'] == DataTypes.COMMAND:
