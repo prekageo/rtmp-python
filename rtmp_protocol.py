@@ -461,7 +461,7 @@ class RtmpClient:
             'msg': DataTypes.COMMAND,
             'command':
             [
-                u'call',
+                proc_name,
                 trans_id,
                 parameters
             ]
