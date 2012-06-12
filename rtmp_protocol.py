@@ -7,6 +7,7 @@ import pyamf.amf0
 import pyamf.util.pure
 import rtmp_protocol_base
 import socket
+import logging
 
 class FileDataTypeMixIn(pyamf.util.pure.DataTypeMixIn):
     """
@@ -148,6 +149,7 @@ class RtmpReader:
         else:
             assert False, header
 
+        logging.debug('recv %r', ret)
         return ret
 
     def read_shared_object_event(self, body_stream, decoder):
@@ -214,6 +216,7 @@ class RtmpWriter:
         self.stream.flush()
 
     def write(self, message):
+        logging.debug('send %r', message)
         """ Encode and write the specified message into the stream. """
         datatype = message['msg']
         body_stream = pyamf.util.BufferedByteStream()
